@@ -3,6 +3,7 @@ import pandas as pd
 metadata = pd.read_csv("inputs/metadata.csv")
 SAMPLES = metadata['run_accession'].unique().tolist()
 KSIZES = [21, 31, 51]
+LINEAGES=['bacteria', 'viral', 'archaea', 'fungi', 'protozoa']
 
 rule all:
     input: expand("outputs/sourmash_taxonomy/{samples}ass-vs-genbank-2022.03-k{ksize}.with-lineages.csv", ksize = KSIZES, samples = SAMPLES)
@@ -26,21 +27,21 @@ rule download_genbank_bacteria_zip_k21:
     output: "inputs/sourmash_databases/genbank-2022.03-bacteria-k21.zip"
     conda: "envs/wget.yml"
     shell:'''
-    wget -O {output} https://dweb.link/ipfs/bafybeif2hdztfrevkngnfqk3bsoyajxxf67o57u4dezbz647jwcf6gnwoy
+    wget -O {output} https://osf.io/6qxfp/download
     '''
 
 rule download_genbank_bacteria_zip_k31:
     output: "inputs/sourmash_databases/genbank-2022.03-bacteria-k31.zip"
     conda: "envs/wget.yml"
     shell:'''
-    wget -O {output} https://dweb.link/ipfs/bafybeigkcvizvhe3xzxsuzv3ryf3ogvgvcmms2e5nfk7epl5egts22jyue
+    wget -O {output} https://osf.io/9ue5g/download
     '''
 
 rule download_genbank_bacteria_zip_k51:
     output: "inputs/sourmash_databases/genbank-2022.03-bacteria-k51.zip"
     conda: "envs/wget.yml"
     shell:'''
-    wget -O {output} https://dweb.link/ipfs/bafybeie3eyyectnh5xqxz44oa3qj5vura3bffqdwfqk6jjuzzadkh7e2sq
+    wget -O {output} https://osf.io/5gvbw/download
     '''
 
 rule download_genbank_bacteria_lineage:
@@ -54,19 +55,19 @@ rule download_genbank_fungi_zip_k21:
     output: "inputs/sourmash_databases/genbank-2022.03-fungi-k21.zip"
     conda: "envs/wget.yml"
     shell:'''
-    wget -O {output} https://dweb.link/ipfs/bafybeibrirvek4lxn6hh3wgsmtsd5vz5gtmewpzeg364bix3hojghwmygq
+    wget -O {output} https://osf.io/fy82q/download
     '''
 rule download_genbank_fungi_zip_k31:
     output: "inputs/sourmash_databases/genbank-2022.03-fungi-k31.zip"
     conda: "envs/wget.yml"
     shell:'''
-    wget -O {output} https://dweb.link/ipfs/bafybeidhhwvwujkteno5ugwgjy4brhrv5dff2aumifcuew73qolfktdndq
+    wget -O {output} https://osf.io/4pdbj/download
     '''
 rule download_genbank_fungi_zip_k51:
     output: "inputs/sourmash_databases/genbank-2022.03-fungi-k51.zip"
     conda: "envs/wget.yml"
     shell:'''
-    wget -O {output} https://dweb.link/ipfs/bafybeibnrtt45f7wez2xb3fy5rxhatpeevc3rilm2gs65u5h6gc4u72fam
+    wget -O {output} https://osf.io/b9a86/download
     '''
 
 rule download_genbank_fungi_lineage:
@@ -80,21 +81,21 @@ rule download_genbank_archaea_zip_k21:
     output: "inputs/sourmash_databases/genbank-2022.03-archaea-k21.zip"
     conda: "envs/wget.yml"
     shell:''' 
-    wget -O {output} https://dweb.link/ipfs/bafybeiepywe7c6zjzgh3rksqiwpo5zyb7uuefbgvbn5nkgiq77iaavpzl4
+    wget -O {output} https://osf.io/g94n5/download
     '''
 
 rule download_genbank_archaea_zip_k31:
     output: "inputs/sourmash_databases/genbank-2022.03-archaea-k31.zip"
     conda: "envs/wget.yml"
     shell:'''
-    wget -O {output} https://dweb.link/ipfs/bafybeidn6epju7yrdxrktq5wjko2yiwp6nrx3mq37htiuwecm7lffrbcdi
+    wget -O {output} https://osf.io/hfybv/download
     '''
 
 rule download_genbank_archaea_zip_k51:
     output: "inputs/sourmash_databases/genbank-2022.03-archaea-k51.zip"
     conda: "envs/wget.yml"
     shell:'''
-    wget -O {output} https://dweb.link/ipfs/bafybeifyrwbx5dnay4mflboc5zai2de3xrvcxtgiu4j7adzj6qrxhb3zva
+    wget -O {output} https://osf.io/dehrc/download
     '''
 
 rule download_genbank_archaea_lineage:
@@ -104,28 +105,28 @@ rule download_genbank_archaea_lineage:
     wget -O {output} https://osf.io/kcbpn/download
     '''
 
-rule download_genbank_virus_zip_k21:
+rule download_genbank_viral_zip_k21:
     output: "inputs/sourmash_databases/genbank-2022.03-viral-k21.zip"
     conda: "envs/wget.yml"
     shell:'''
-    wget -O {output} https://dweb.link/ipfs/bafybeicjyx6qkhdtw6q4cxs6fyl46gqfhd4q5eqje5lkswf2npljnyytzi
+    wget -O {output} https://osf.io/updvc/download
     '''
 
-rule download_genbank_virus_zip_k31:
+rule download_genbank_viral_zip_k31:
     output: "inputs/sourmash_databases/genbank-2022.03-viral-k31.zip"
     conda: "envs/wget.yml"
     shell:'''
-    wget -O {output} https://dweb.link/ipfs/bafybeibqsldwsztjf66rwvwnb6hamjtsfkmdk5bmfqbzwrod6wwwkqz2ya
+    wget -O {output} https://osf.io/egkt2/download
     '''
 
-rule download_genbank_virus_zip_k51:
+rule download_genbank_viral_zip_k51:
     output: "inputs/sourmash_databases/genbank-2022.03-viral-k51.zip"
     conda: "envs/wget.yml"
     shell:'''
-    wget -O {output} https://dweb.link/ipfs/bafybeibgifuv4q3mihfubnhjhwm2esjnoseudpnzwahlkp3hvlbmtd4s2q
+    wget -O {output} https://osf.io/z8scg/download
     '''
 
-rule download_genbank_virus_lineage:
+rule download_genbank_viral_lineage:
     output: "inputs/sourmash_databases/genbank-2022.03-viral.lineages.csv.gz"
     conda: "envs/wget.yml"
     shell:'''
@@ -136,21 +137,21 @@ rule download_genbank_protozoa_zip_k21:
     output: "inputs/sourmash_databases/genbank-2022.03-protozoa-k21.zip"
     conda: "envs/wget.yml"
     shell:'''
-    wget -O {output} https://dweb.link/ipfs/bafybeicfh4xl4wuxd4xy2tf73hfamxlqa3s2higghnsjay4t5wtlmsdo5y
+    wget -O {output} https://osf.io/m23r6/download 
     '''
 
 rule download_genbank_protozoa_zip_k31:
     output: "inputs/sourmash_databases/genbank-2022.03-protozoa-k31.zip"
     conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://dweb.link/ipfs/bafybeicpxjhfrzem7f34eghbbwm3vglz2njxo72vpqcw7foilfomexsghi
+    shell:''' 
+    wget -O {output} https://osf.io/zm5vg/download
     '''
 
 rule download_genbank_protozoa_zip_k51:
     output: "inputs/sourmash_databases/genbank-2022.03-protozoa-k51.zip"
     conda: "envs/wget.yml"
     shell:'''
-    wget -O {output} https://dweb.link/ipfs/bafybeigfpxkmzyq6sdkob53l6ztiy5ro44dzkad7dxakhuaao6cw4gp4eu
+    wget -O {output} https://osf.io/32y98/download
     '''
 
 rule download_genbank_protist_lineage:
@@ -206,32 +207,30 @@ rule sourmash_plot:
 rule sourmash_gather:
     input:
         sig="outputs/sourmash_sketch/{samples}ass.sig",
-        db1="inputs/sourmash_databases/genbank-2022.03-bacteria-k{ksize}.zip",
-        db2="inputs/sourmash_databases/genbank-2022.03-viral-k{ksize}.zip",
-        db3="inputs/sourmash_databases/genbank-2022.03-protozoa-k{ksize}.zip",
-        db4="inputs/sourmash_databases/genbank-2022.03-archaea-k{ksize}.zip",
-        db5="inputs/sourmash_databases/genbank-2022.03-fungi-k{ksize}.zip" 
+        databases=expand("inputs/sourmash_databases/genbank-2022.03-{lineage}-k{{ksize}}.zip", lineage = LINEAGES)
     output: csv="outputs/sourmash_gather/{samples}ass-vs-genbank-2022.03-k{ksize}.csv"
     conda: "envs/sourmash.yml"
     shell:'''
-    sourmash gather -k {wildcards.ksize} --scaled 1000 --threshold-bp 0 -o {output.csv} {input.sig} {input.db1} {input.db2} {input.db3} {input.db4} {input.db5}
+    sourmash gather -k {wildcards.ksize} --scaled 1000 --threshold-bp 0 -o {output.csv} {input.sig} {input.databases}
     '''
    
 ##########################################################
 ## Sourmash taxonomy
 ##########################################################
 
+rule gunzip_lineage_csvs:
+    input: "inputs/sourmash_databases/genbank-2022.03-{lineage}.lineages.csv.gz"
+    output: "inputs/sourmash_databases/genbank-2022.03-{lineage}.lineages.csv"
+    shell:'''
+    gunzip -c {input} > {output}
+    '''
+
 rule sourmash_taxonomy_prepare:
-    input:
-        lin1="inputs/sourmash_databases/genbank-2022.03-bacteria.lineages.csv.gz",
-        lin2="inputs/sourmash_databases/genbank-2022.03-viral.lineages.csv.gz",
-        lin3="inputs/sourmash_databases/genbank-2022.03-protozoa.lineages.csv.gz", 
-        lin4="inputs/sourmash_databases/genbank-2022.03-archaea.lineages.csv.gz",
-        lin5="inputs/sourmash_databases/genbank-2022.03-fungi.lineages.csv.gz",
+    input: expand("inputs/sourmash_databases/genbank-2022.03-{lineage}.lineages.csv", lineage = LINEAGES),
     output: "outputs/sourmash_taxonomy/genbank-2022.03-prepared-lineages.sqldb"
     conda: "envs/sourmash.yml"
     shell:'''
-    sourmash tax prepare --taxonomy-csv {input.lin1} {input.lin2} {input.lin3} {input.lin4} {input.lin5} -o {output}
+    sourmash tax prepare --taxonomy-csv {input} -o {output}
     '''
 
 rule sourmash_taxonomy_annotate:
