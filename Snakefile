@@ -14,7 +14,8 @@ rule k21:
 rule k31:
     input: 
         expand("outputs/sourmash_taxonomy/{samples}ass-vs-genbank-2022.03-k{ksize}.with-lineages.csv", ksize = 31, samples = SAMPLES),
-        expand("outputs/sourmash_compare/comp_k{ksize}.csv", ksize = 31)
+        expand("outputs/sourmash_compare/comp_k{ksize}.csv", ksize = 31),
+        expand("outputs/sourmash_sketch_csv/{samples}_k{ksize}.csv", ksize = 31, samples = SAMPLES)
 
 rule k51:
     input: expand("outputs/sourmash_taxonomy/{samples}ass-vs-genbank-2022.03-k{ksize}.with-lineages.csv", ksize = 51, samples = SAMPLES)
@@ -249,3 +250,18 @@ rule sourmash_taxonomy_annotate:
 # upset plot on taxonomy?
 # taxonomy bar charts as fraction of sample
 # ...
+
+####################################################################
+## Visualization: upset plot for the intersection of shared 
+##                hashes (subsampled k-mers) between samples
+####################################################################
+
+rule sourmash_sketch_convert_to_csv:
+    input: "outputs/sourmash_sketch/{samples}ass.sig"
+    output: "outputs/sourmash_sketch_csv/{samples}_k{ksize}.csv"
+    conda: "envs/sourmash.yml"
+    shell:'''
+    python scripts/sig_to_csv.py {wildcards.ksize} {input} {output}
+    '''
+
+
