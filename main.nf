@@ -58,3 +58,12 @@ workflow {
 
 
 // you can have two channels as output. And then they will be 0 indexed.
+
+/* TODO ~Monday:
++ figure out many:1 for sourmash_compare
++ add sourmash plot process
++ figure out docker containers for running, and document the build process
+TODO longer term:
++ figure out how to re-use the sourmash sketch process -- or should there be two workflows, one that does sketch -> compare -> plot, and one that does sketch -> gather etc. Probably not two workflows bc I only want to have to sketch files once.
++ figure out how to encode download for dbs. Probably should parameterize and if/else on kmer size.
+
