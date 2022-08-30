@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 metadata = pd.read_csv("inputs/metadata.csv")
 SAMPLES = metadata['run_accession'].unique().tolist()
@@ -61,7 +62,7 @@ rule sourmash_sig_cat_checkv_fna:
     benchmark: "benchmarks/sourmash-sig-cat-checkv-db-v1.4-dna-k{dna_ksize}.txt"
     conda: "envs/sourmash.yml"
     shell:'''
-    sourmash sig cat -k {dna_ksize} -o {output} {input}
+    sourmash sig cat -k {wildcards.dna_ksize} -o {output} {input}
     '''
 
 ################################################################
@@ -84,12 +85,12 @@ rule sourmash_sketch_checkv_faa:
     sourmash sketch protein -p k=7,k=10,scaled=200,abund --name {wildcards.viral_genome} -o {output}
     '''
 
-def checkpoint_separate_checkv_protein_sequences_into_genomes:
-    # checkpoint_output encodes the output directory from the checkpoint rule.
+def checkpoint_separate_checkv_protein_sequences_into_genomes(wildcards):
     checkpoint_output = checkpoints.separate_checkv_protein_sequences_into_genomes.get(**wildcards).output[0]    
-    file_names = expand("outputs/checkv-db-v1.4-sourmash-sketch/{viral_genome}-protein.sig",
+    file_names = expand("outputs/checkv-db-v1.4-sourmash-sketch/{viral_genome}-protein.sig", 
                         viral_genome = glob_wildcards(os.path.join(checkpoint_output, "{viral_genome}.faa.gz")).viral_genome)
     return file_names
+
 
 rule sourmash_sig_cat_checkv_faa:
     input: checkpoint_separate_checkv_protein_sequences_into_genomes
