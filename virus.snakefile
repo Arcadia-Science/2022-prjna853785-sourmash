@@ -82,7 +82,7 @@ rule sourmash_sketch_checkv_faa:
     benchmark:"benchmarks/sourmash-sketch-protein-checkv-db-v1.4/{viral_genome}-protein.txt"
     conda: "envs/sourmash.yml"
     shell:'''
-    sourmash sketch protein -p k=7,k=10,scaled=200,abund --name {wildcards.viral_genome} -o {output}
+    sourmash sketch protein -p k=7,k=10,scaled=200,abund --name {wildcards.viral_genome} -o {output} {input}
     '''
 
 def checkpoint_separate_checkv_protein_sequences_into_genomes(wildcards):
