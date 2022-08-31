@@ -8,10 +8,10 @@ DNA_KSIZES = [21, 31, 51]
 
 
 rule protein:
-    input: expand("outputs/sourmash_gather/{sample}ass-vs-checkv-db-v1.4-k{protein_ksize}.csv", sample = SAMPLES, protein_ksize = PROTEIN_KSIZES)
+    input: expand("outputs/sourmash_gather/{sample}ass-vs-checkv-db-v1.4-protein-k{protein_ksize}.csv", sample = SAMPLES, protein_ksize = PROTEIN_KSIZES)
 
 rule dna:
-    input: expand("outputs/sourmash_gather/{sample}ass-vs-checkv-db-v1.4-k{dna_ksize}.csv", sample = SAMPLES, dna_ksize = DNA_KSIZES)
+    input: expand("outputs/sourmash_gather/{sample}ass-vs-checkv-db-v1.4-dna-k{dna_ksize}.csv", sample = SAMPLES, dna_ksize = DNA_KSIZES)
 
 ##############################################################
 ## Download CheckV database
@@ -21,7 +21,7 @@ rule download_checkv_database:
     output: "inputs/checkv-database/checkv-db-v1.4.tar.gz"
     conda: "envs/wget.yml"
     shell:'''
-    wget {output} https://portal.nersc.gov/CheckV/checkv-db-v1.4.tar.gz
+    wget -O {output} https://portal.nersc.gov/CheckV/checkv-db-v1.4.tar.gz
     '''
 
 rule decompress_checkv_database:
@@ -50,7 +50,7 @@ rule sourmash_sketch_checkv_fna:
     benchmark: "benchmarks/sourmash-sketch-dna-checkv-db-v1.4.txt"
     conda: "envs/sourmash.yml"
     shell:'''
-    sourmash sketch dna -p k=21,k=31,k=51,scaled=100,abund --name-from-first --singleton -o {output}
+    sourmash sketch dna -p k=21,k=31,k=51,scaled=100,abund --name-from-first --singleton -o {output} {input}
     '''
 
 rule sourmash_sig_cat_checkv_fna:
@@ -70,7 +70,7 @@ rule sourmash_sig_cat_checkv_fna:
 ################################################################
 
 checkpoint separate_checkv_protein_sequences_into_genomes:
-    input: "inputs/checkv-database/checkv-db-v1.4/genome_db/checkv_reps.faa"
+    input: checkv="inputs/checkv-database/checkv-db-v1.4/genome_db/checkv_reps.faa"
     output: directory("outputs/checkv-db-v1.4-protein-sequences-by-genome/")
     benchmark: "benchmarks/separate-checkv-db-v1.4-protein-sequences-into-genomes.txt"
     conda: "envs/biostrings.yml"
@@ -116,7 +116,7 @@ rule sourmash_sketch_input_files_dna_for_viral:
     '''
 
 rule sourmash_sketch_input_files_protein_for_viral:
-    input: "inputs/raw/{samples}ass.fasta"
+    input: "inputs/raw/{sample}ass.fasta"
     output: "outputs/sourmash-sketch/{sample}ass-protein-scaled200.sig"
     benchmark: "benchmarks/sourmash-sketch/{sample}-protein-scaled200.txt"
     conda: "envs/sourmash.yml"
@@ -133,7 +133,7 @@ rule sourmash_gather_dna:
     input:
         sig="outputs/sourmash-sketch/{sample}ass-dna-scaled100.sig",
         databases="outputs/sourmash-databases/checkv-db-v1.4-reps-dna-k{dna_ksize}.zip"
-    output: csv="outputs/sourmash_gather/{sample}ass-vs-checkv-db-v1.4-k{dna_ksize}.csv"
+    output: csv="outputs/sourmash_gather/{sample}ass-vs-checkv-db-v1.4-dna-k{dna_ksize}.csv"
     conda: "envs/sourmash.yml"
     shell:'''
     sourmash gather -k {wildcards.dna_ksize} --scaled 100 --threshold-bp 0 -o {output.csv} {input.sig} {input.databases}
@@ -143,7 +143,7 @@ rule sourmash_gather_protein:
     input:
         sig="outputs/sourmash-sketch/{sample}ass-protein-scaled200.sig",
         databases="outputs/sourmash-databases/checkv-db-v1.4-reps-protein-k{protein_ksize}.zip"
-    output: csv="outputs/sourmash_gather/{sample}ass-vs-checkv-db-v1.4-k{protein_ksize}.csv"
+    output: csv="outputs/sourmash_gather/{sample}ass-vs-checkv-db-v1.4-protein-k{protein_ksize}.csv"
     conda: "envs/sourmash.yml"
     shell:'''
     sourmash gather -k {wildcards.protein_ksize} --scaled 200 --threshold-bp 0 -o {output.csv} {input.sig} {input.databases}
