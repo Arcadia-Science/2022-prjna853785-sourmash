@@ -77,12 +77,15 @@ checkpoint separate_checkv_protein_sequences_into_genomes:
     script: "scripts/separate-checkv-protein-sequences-into-genomes.R"
 
 rule sourmash_sketch_checkv_faa:
+    """
+    the :q notation tells snakemake to robustly quote the file names, which is required as some of the fasta identifiers have pipes 
+    """
     input: "outputs/checkv-db-v1.4-protein-sequences-by-genome/{viral_genome}.faa.gz"
     output: "outputs/checkv-db-v1.4-sourmash-sketch/{viral_genome}-protein.sig"
     benchmark:"benchmarks/sourmash-sketch-protein-checkv-db-v1.4/{viral_genome}-protein.txt"
     conda: "envs/sourmash.yml"
     shell:'''
-    sourmash sketch protein -p k=7,k=10,scaled=200,abund --name {wildcards.viral_genome} -o {output} {input}
+    sourmash sketch protein -p k=7,k=10,scaled=200,abund --name {wildcards.viral_genome:q} -o {output:q} {input:q}
     '''
 
 def checkpoint_separate_checkv_protein_sequences_into_genomes(wildcards):
@@ -91,14 +94,23 @@ def checkpoint_separate_checkv_protein_sequences_into_genomes(wildcards):
                         viral_genome = glob_wildcards(os.path.join(checkpoint_output, "{viral_genome}.faa.gz")).viral_genome)
     return file_names
 
+rule make_file_for_sourmash_sig_cat_checkv_faa:
+    input: checkpoint_separate_checkv_protein_sequences_into_genomes
+    output: "outputs/sourmash-databases/checkv-db-v1.4-reps-sigs.txt"
+    benchmark: "benchmarks/ls-sourmash-sketch-protein-checkv-db-v1.4.txt"
+    run:
+        with open(output[0], 'w') as f:
+            for sigpath in input:
+                f.write(f"{sigpath}\n")
+
 
 rule sourmash_sig_cat_checkv_faa:
-    input: checkpoint_separate_checkv_protein_sequences_into_genomes
+    input: "outputs/sourmash-databases/checkv-db-v1.4-reps-sigs.txt"
     output: "outputs/sourmash-databases/checkv-db-v1.4-reps-protein-k{protein_ksize}.zip"
     benchmark: "benchmarks/sourmash-sig-cat-checkv-db-v1.4-protein-k{protein_ksize}.txt"
     conda: "envs/sourmash.yml"
     shell:'''
-    sourmash sig cat -k {wildcards.protein_ksize} {input}
+    sourmash sig cat -k {wildcards.protein_ksize} -o {output} --from-file {input}
     '''
 
 
@@ -121,7 +133,7 @@ rule sourmash_sketch_input_files_protein_for_viral:
     benchmark: "benchmarks/sourmash-sketch/{sample}-protein-scaled200.txt"
     conda: "envs/sourmash.yml"
     shell:'''
-    sourmash sketch protein -p k=7,k=10,scaled=200,abund --name {wildcards.sample} -o {output} {input}
+    sourmash sketch translate -p k=7,k=10,scaled=200,abund --name {wildcards.sample} -o {output} {input}
     '''
 
 ###################################################################
