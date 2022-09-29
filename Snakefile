@@ -15,7 +15,8 @@ rule k31:
     input: 
         expand("outputs/sourmash_taxonomy/{samples}ass-vs-genbank-2022.03-k{ksize}.with-lineages.csv", ksize = 31, samples = SAMPLES),
         expand("outputs/sourmash_compare/comp_k{ksize}.csv", ksize = 31),
-        expand("outputs/sourmash_sketch_csv/{samples}_k{ksize}.csv", ksize = 31, samples = SAMPLES)
+        expand("outputs/sourmash_sketch_csv/{samples}_k{ksize}.csv", ksize = 31, samples = SAMPLES),
+        expand("outputs/sourmash_sketch_csv_abund/{samples}_k{ksize}.csv", ksize = 31, samples = SAMPLES)
 
 rule k51:
     input: expand("outputs/sourmash_taxonomy/{samples}ass-vs-genbank-2022.03-k{ksize}.with-lineages.csv", ksize = 51, samples = SAMPLES)
@@ -264,4 +265,20 @@ rule sourmash_sketch_convert_to_csv:
     python scripts/sig_to_csv.py {wildcards.ksize} {input} {output}
     '''
 
+# TODO: update download link to main when script is merged into mtx repo
+rule download_sig_to_csv_abund_script:
+    output: "scripts/sig_to_csv_abund.py"
+    conda: "envs/wget.yml"
+    shell:'''
+    wget -O {output} https://raw.githubusercontent.com/Arcadia-Science/2022-mtx-not-in-mgx-pairs/ter/specaccum/scripts/sig_to_csv_abund.py
+    '''
 
+rule sourmash_sketch_convert_to_csv_abund:
+    input:
+        py = "scripts/sig_to_csv_abund.py", 
+        sig="outputs/sourmash_sketch/{samples}ass.sig"
+    output: "outputs/sourmash_sketch_csv_abund/{samples}_k{ksize}.csv"
+    conda: "envs/sourmash.yml"
+    shell:'''
+    python scripts/sig_to_csv_abund.py {wildcards.ksize} {input.sig} {output}
+    '''
