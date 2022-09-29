@@ -6,6 +6,10 @@ import os
 metadata = pd.read_csv("inputs/metadata.csv")
 SAMPLES = metadata['run_accession'].unique().tolist()
 
+
+rule all:
+    input: expand("outputs/checkv/{sample}/completeness.tsv", sample = SAMPLES)
+        
 rule checkv_download_and_build_database:
     output: "inputs/checkv-database-built/checkv-db-v1.4/genome_db/checkv_reps.dmnd"
     params: outdir = "inputs/checkv-database-built"
@@ -20,7 +24,7 @@ rule checkv:
         fasta="inputs/raw/{sample}ass.fasta"
     output: "outputs/checkv/{sample}/completeness.tsv"
     params:
-        outdir = lambda wildcards: "outputs/checkv" + wildcards.sample
+        outdir = lambda wildcards: "outputs/checkv/" + wildcards.sample,
         dbdir  = "inputs/checkv-database-built/checkv-db-v1.4"
     threads: 16
     conda: "envs/checkv.yml"
