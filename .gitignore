@@ -1,0 +1,7 @@
+.nextflow*
+.snakemake
+.DS_store
+notebooks/.ipynb_checkpoints/
+.Rhistory
+outputs/
+work/
