@@ -40,7 +40,7 @@ rule download_sourmash_lineages_genbank:
     output: "inputs/sourmash_databases/genbank-2022.03-{lineage}.lineages.csv.gz"
     run:
         sourmash_lineage_info = pd.read_csv(input)
-        lineage_df = sourmash_lineage_info.loc[sourmash_database_info['lineage'] == wildcards.lineage]
+        lineage_df = sourmash_lineage_info.loc[sourmash_lineage_info['lineage'] == wildcards.lineage]
         osf_hash = lineage_df['osf_hash'].values[0] 
         shell("wget -O {output} https://osf.io/{osf_hash}/download")
 
