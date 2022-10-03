@@ -25,143 +25,24 @@ rule k51:
 ## Download sourmash databases & taxonomy files
 ##########################################################
 
-rule download_genbank_bacteria_zip_k21:
-    output: "inputs/sourmash_databases/genbank-2022.03-bacteria-k21.zip"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/6qxfp/download
-    '''
+rule download_sourmash_databases_genbank:
+    input: "inputs/sourmash_databases/sourmash-database-info.csv"
+    output: "inputs/sourmash_databases/genbank-2022.03-{lineage}-k{ksize}.zip"
+    run:
+        sourmash_database_info = pd.read_csv(input)
+        lineage_df = sourmash_database_info.loc[sourmash_database_info['lineage'] == wildcards.lineage]
+        db_df = lineage_df.loc[lineage_df['ksize'] == wildcards.ksize]
+        osf_hash = db_df['osf_hash'].values[0] 
+        shell("wget -O {output} https://osf.io/{osf_hash}/download")
 
-rule download_genbank_bacteria_zip_k31:
-    output: "inputs/sourmash_databases/genbank-2022.03-bacteria-k31.zip"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/9ue5g/download
-    '''
-
-rule download_genbank_bacteria_zip_k51:
-    output: "inputs/sourmash_databases/genbank-2022.03-bacteria-k51.zip"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/5gvbw/download
-    '''
-
-rule download_genbank_bacteria_lineage:
-    output: "inputs/sourmash_databases/genbank-2022.03-bacteria.lineages.csv.gz"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/4agsp/download
-    '''
-
-rule download_genbank_fungi_zip_k21:
-    output: "inputs/sourmash_databases/genbank-2022.03-fungi-k21.zip"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/fy82q/download
-    '''
-rule download_genbank_fungi_zip_k31:
-    output: "inputs/sourmash_databases/genbank-2022.03-fungi-k31.zip"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/4pdbj/download
-    '''
-rule download_genbank_fungi_zip_k51:
-    output: "inputs/sourmash_databases/genbank-2022.03-fungi-k51.zip"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/b9a86/download
-    '''
-
-rule download_genbank_fungi_lineage:
-    output: "inputs/sourmash_databases/genbank-2022.03-fungi.lineages.csv.gz"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/s4b85/download
-    '''
-
-rule download_genbank_archaea_zip_k21:
-    output: "inputs/sourmash_databases/genbank-2022.03-archaea-k21.zip"
-    conda: "envs/wget.yml"
-    shell:''' 
-    wget -O {output} https://osf.io/g94n5/download
-    '''
-
-rule download_genbank_archaea_zip_k31:
-    output: "inputs/sourmash_databases/genbank-2022.03-archaea-k31.zip"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/hfybv/download
-    '''
-
-rule download_genbank_archaea_zip_k51:
-    output: "inputs/sourmash_databases/genbank-2022.03-archaea-k51.zip"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/dehrc/download
-    '''
-
-rule download_genbank_archaea_lineage:
-    output: "inputs/sourmash_databases/genbank-2022.03-archaea.lineages.csv.gz"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/kcbpn/download
-    '''
-
-rule download_genbank_viral_zip_k21:
-    output: "inputs/sourmash_databases/genbank-2022.03-viral-k21.zip"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/updvc/download
-    '''
-
-rule download_genbank_viral_zip_k31:
-    output: "inputs/sourmash_databases/genbank-2022.03-viral-k31.zip"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/egkt2/download
-    '''
-
-rule download_genbank_viral_zip_k51:
-    output: "inputs/sourmash_databases/genbank-2022.03-viral-k51.zip"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/z8scg/download
-    '''
-
-rule download_genbank_viral_lineage:
-    output: "inputs/sourmash_databases/genbank-2022.03-viral.lineages.csv.gz"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/j4tsu/download
-    '''
-
-rule download_genbank_protozoa_zip_k21:
-    output: "inputs/sourmash_databases/genbank-2022.03-protozoa-k21.zip"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/m23r6/download 
-    '''
-
-rule download_genbank_protozoa_zip_k31:
-    output: "inputs/sourmash_databases/genbank-2022.03-protozoa-k31.zip"
-    conda: "envs/wget.yml"
-    shell:''' 
-    wget -O {output} https://osf.io/zm5vg/download
-    '''
-
-rule download_genbank_protozoa_zip_k51:
-    output: "inputs/sourmash_databases/genbank-2022.03-protozoa-k51.zip"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/32y98/download
-    '''
-
-rule download_genbank_protist_lineage:
-    output: "inputs/sourmash_databases/genbank-2022.03-protozoa.lineages.csv.gz"
-    conda: "envs/wget.yml"
-    shell:'''
-    wget -O {output} https://osf.io/2x8u4/download
-    '''
+rule download_sourmash_lineages_genbank:
+    input: "inputs/sourmash_databases/sourmash-lineage-info.csv"
+    output: "inputs/sourmash_databases/genbank-2022.03-{lineage}.lineages.csv.gz"
+    run:
+        sourmash_lineage_info = pd.read_csv(input)
+        lineage_df = sourmash_lineage_info.loc[sourmash_database_info['lineage'] == wildcards.lineage]
+        osf_hash = lineage_df['osf_hash'].values[0] 
+        shell("wget -O {output} https://osf.io/{osf_hash}/download")
 
 ##########################################################
 ## Sketch files
