@@ -5,3 +5,6 @@ notebooks/.ipynb_checkpoints/
 .Rhistory
 outputs/
 work/
+inputs/sourmash_databases/*zip
+inputs/sourmash_databases/*gz
+
