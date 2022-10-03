@@ -29,20 +29,20 @@ rule download_sourmash_databases_genbank:
     input: "inputs/sourmash_databases/sourmash-database-info.csv"
     output: "inputs/sourmash_databases/genbank-2022.03-{lineage}-k{ksize}.zip"
     run:
-        sourmash_database_info = pd.read_csv(input)
-        lineage_df = sourmash_database_info.loc[sourmash_database_info['lineage'] == wildcards.lineage]
-        db_df = lineage_df.loc[lineage_df['ksize'] == wildcards.ksize]
-        osf_hash = db_df['osf_hash'].values[0] 
-        shell("wget -O {output} https://osf.io/{osf_hash}/download")
+        sourmash_database_info = pd.read_csv(str(input[0]))
+        ksize = int(wildcards.ksize)
+        lineage_df = sourmash_database_info.loc[(sourmash_database_info['lineage'] == wildcards.lineage) & (sourmash_database_info['ksize'] == ksize)]
+        osf_hash = lineage_df['osf_hash'].values[0] 
+        shell("curl -JLo {output} https://osf.io/{osf_hash}/download")
 
 rule download_sourmash_lineages_genbank:
     input: "inputs/sourmash_databases/sourmash-lineage-info.csv"
     output: "inputs/sourmash_databases/genbank-2022.03-{lineage}.lineages.csv.gz"
     run:
-        sourmash_lineage_info = pd.read_csv(input)
+        sourmash_lineage_info = pd.read_csv(str(input[0]))
         lineage_df = sourmash_lineage_info.loc[sourmash_lineage_info['lineage'] == wildcards.lineage]
         osf_hash = lineage_df['osf_hash'].values[0] 
-        shell("wget -O {output} https://osf.io/{osf_hash}/download")
+        shell("curl -o {output} https://osf.io/{osf_hash}/download")
 
 ##########################################################
 ## Sketch files
