@@ -33,10 +33,11 @@ rule download_sourmash_databases_genbank:
         ksize = int(wildcards.ksize)
         lineage_df = sourmash_database_info.loc[(sourmash_database_info['lineage'] == wildcards.lineage) & (sourmash_database_info['ksize'] == ksize)]
         if lineage_df is None:
-            print('lineage_df is None. Are you sure the sourmash database info csv was not empty?')
+            raise TypeError("'None' value provided for lineage_df. Are you sure the sourmash database info csv was not empty?")
 
         osf_hash = lineage_df['osf_hash'].values[0] 
         shell("curl -JLo {output} https://osf.io/{osf_hash}/download")
+
 
 rule download_sourmash_lineages_genbank:
     input: "inputs/sourmash_databases/sourmash-lineage-info.csv"
@@ -45,10 +46,11 @@ rule download_sourmash_lineages_genbank:
         sourmash_lineage_info = pd.read_csv(str(input[0]))
         lineage_df = sourmash_lineage_info.loc[sourmash_lineage_info['lineage'] == wildcards.lineage]
         if lineage_df is None:
-            print('lineage_df is None. Are you sure the sourmash database info csv was not empty?')
+            raise TypeError("'None' value provided for lineage_df. Are you sure the sourmash database info csv was not empty?")
 
         osf_hash = lineage_df['osf_hash'].values[0] 
         shell("curl -JLo {output} https://osf.io/{osf_hash}/download")
+
 
 ##########################################################
 ## Sketch files
