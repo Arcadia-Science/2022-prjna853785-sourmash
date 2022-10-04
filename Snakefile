@@ -6,20 +6,20 @@ KSIZES = [21, 31, 51]
 LINEAGES=['bacteria', 'viral', 'archaea', 'fungi', 'protozoa']
 
 rule all:
-    input: expand("outputs/sourmash_taxonomy/{samples}ass-vs-genbank-2022.03-k{ksize}.with-lineages.csv", ksize = KSIZES, samples = SAMPLES)
+    input: expand("outputs/sourmash_taxonomy/{samples}-vs-genbank-2022.03-k{ksize}.with-lineages.csv", ksize = KSIZES, samples = SAMPLES)
 
 rule k21:
-    input: expand("outputs/sourmash_taxonomy/{samples}ass-vs-genbank-2022.03-k{ksize}.with-lineages.csv", ksize = 21, samples = SAMPLES)
+    input: expand("outputs/sourmash_taxonomy/{samples}-vs-genbank-2022.03-k{ksize}.with-lineages.csv", ksize = 21, samples = SAMPLES)
 
 rule k31:
     input: 
-        expand("outputs/sourmash_taxonomy/{samples}ass-vs-genbank-2022.03-k{ksize}.with-lineages.csv", ksize = 31, samples = SAMPLES),
+        expand("outputs/sourmash_taxonomy/{samples}-vs-genbank-2022.03-k{ksize}.with-lineages.csv", ksize = 31, samples = SAMPLES),
         expand("outputs/sourmash_compare/comp_k{ksize}.csv", ksize = 31),
         expand("outputs/sourmash_sketch_csv/{samples}_k{ksize}.csv", ksize = 31, samples = SAMPLES),
         expand("outputs/sourmash_sketch_csv_abund/{samples}_k{ksize}.csv", ksize = 31, samples = SAMPLES)
 
 rule k51:
-    input: expand("outputs/sourmash_taxonomy/{samples}ass-vs-genbank-2022.03-k{ksize}.with-lineages.csv", ksize = 51, samples = SAMPLES)
+    input: expand("outputs/sourmash_taxonomy/{samples}-vs-genbank-2022.03-k{ksize}.with-lineages.csv", ksize = 51, samples = SAMPLES)
 
 ##########################################################
 ## Download sourmash databases & taxonomy files
@@ -168,8 +168,8 @@ rule download_genbank_protist_lineage:
 ##########################################################
 
 rule sourmash_sketch_input_files:
-    input: "inputs/raw/{samples}ass.fasta"
-    output: "outputs/sourmash_sketch/{samples}ass.sig"
+    input: "inputs/raw/{samples}_flyeass.fasta"
+    output: "outputs/sourmash_sketch/{samples}.sig"
     conda: "envs/sourmash.yml"
     shell:'''
     sourmash sketch dna -p k=21,k=31,k=51,scaled=1000,abund --name {wildcards.samples} -o {output} {input}
@@ -180,7 +180,7 @@ rule sourmash_sketch_input_files:
 ##########################################################
 
 rule sourmash_compare:
-    input: expand("outputs/sourmash_sketch/{samples}ass.sig", samples = SAMPLES)
+    input: expand("outputs/sourmash_sketch/{samples}.sig", samples = SAMPLES)
     output: 
         comp = "outputs/sourmash_compare/comp_k{ksize}", 
         csv = "outputs/sourmash_compare/comp_k{ksize}.csv"
@@ -208,9 +208,9 @@ rule sourmash_plot:
 
 rule sourmash_gather:
     input:
-        sig="outputs/sourmash_sketch/{samples}ass.sig",
+        sig="outputs/sourmash_sketch/{samples}.sig",
         databases=expand("inputs/sourmash_databases/genbank-2022.03-{lineage}-k{{ksize}}.zip", lineage = LINEAGES)
-    output: csv="outputs/sourmash_gather/{samples}ass-vs-genbank-2022.03-k{ksize}.csv"
+    output: csv="outputs/sourmash_gather/{samples}-vs-genbank-2022.03-k{ksize}.csv"
     conda: "envs/sourmash.yml"
     shell:'''
     sourmash gather -k {wildcards.ksize} --scaled 1000 --threshold-bp 0 -o {output.csv} {input.sig} {input.databases}
@@ -238,8 +238,8 @@ rule sourmash_taxonomy_prepare:
 rule sourmash_taxonomy_annotate:
    input:
        lin_prepared="outputs/sourmash_taxonomy/genbank-2022.03-prepared-lineages.sqldb",
-       gather="outputs/sourmash_gather/{samples}ass-vs-genbank-2022.03-k{ksize}.csv"
-   output: "outputs/sourmash_taxonomy/{samples}ass-vs-genbank-2022.03-k{ksize}.with-lineages.csv"
+       gather="outputs/sourmash_gather/{samples}-vs-genbank-2022.03-k{ksize}.csv"
+   output: "outputs/sourmash_taxonomy/{samples}-vs-genbank-2022.03-k{ksize}.with-lineages.csv"
    params: outdir = "outputs/sourmash_taxonomy/"
    conda: "envs/sourmash.yml"
    shell:'''
@@ -258,7 +258,7 @@ rule sourmash_taxonomy_annotate:
 ####################################################################
 
 rule sourmash_sketch_convert_to_csv:
-    input: "outputs/sourmash_sketch/{samples}ass.sig"
+    input: "outputs/sourmash_sketch/{samples}.sig"
     output: "outputs/sourmash_sketch_csv/{samples}_k{ksize}.csv"
     conda: "envs/sourmash.yml"
     shell:'''
@@ -276,7 +276,7 @@ rule download_sig_to_csv_abund_script:
 rule sourmash_sketch_convert_to_csv_abund:
     input:
         py = "scripts/sig_to_csv_abund.py", 
-        sig="outputs/sourmash_sketch/{samples}ass.sig"
+        sig="outputs/sourmash_sketch/{samples}.sig"
     output: "outputs/sourmash_sketch_csv_abund/{samples}_k{ksize}.csv"
     conda: "envs/sourmash.yml"
     shell:'''
